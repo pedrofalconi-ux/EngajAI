@@ -1,0 +1,1379 @@
+[
+  {
+    "createdAt": "2025-11-08T23:27:01.532Z",
+    "updatedAt": "2025-11-09T13:33:15.201Z",
+    "id": "M5mq4UZZmushXF0p",
+    "name": "Product Content - Classroom hackathon",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          384,
+          -208
+        ],
+        "id": "6e92db05-f530-438b-93b2-ed8d1f6de2a6",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "jDAayoj1hHwdWdhp",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json['Conteudo A ser gerado'] }}",
+          "options": {
+            "systemMessage": "Gere um post educativo a partir do texto fornecido, transformando o conteúdo em uma explicação clara, didática e envolvente. Utilize a ferramenta consultar para buscar informações complementares que ampliem, atualizem ou contextualizem o tema, garantindo precisão e relevância.\n\nO post deve apresentar um título atrativo, uma introdução que desperte interesse, um desenvolvimento que explique o assunto de forma acessível e educativa, e uma conclusão que incentive a reflexão ou ação do leitor.\n\nAdapte o tom para ser informativo, inspirador e compreensível, mantendo o foco em educar e gerar valor para o público. Estruture o texto de forma fluida, com parágrafos curtos, recursos visuais como negrito e listas quando adequado, e linguagem apropriada ao canal de publicação.\n\nSempre utilize a ferramenta consultar para pesquisar sobre o tema, ter um entendimento mais amplo e escrever o texto de output\n\n\n"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          400,
+          -384
+        ],
+        "id": "e343f55f-c1e0-419a-a01b-d51d0a52eae1",
+        "name": "Product content - Hackathon"
+      },
+      {
+        "parameters": {
+          "formTitle": "Descreva sobre o Post",
+          "formDescription": "Descreva sobre o que será o conteúdo produzido",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "Conteudo A ser gerado",
+                "fieldType": "textarea"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.2,
+        "position": [
+          176,
+          -384
+        ],
+        "id": "1e858680-90d3-42d8-8581-cd0b3f0f1a8a",
+        "name": "On form submission",
+        "webhookId": "4dccf6df-5118-426a-84bf-027dce127e93"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $workflow.id }}",
+          "contextWindowLength": 1
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          480,
+          -224
+        ],
+        "id": "c1e9e814-13b4-43b3-82b2-96c46e8f58ce",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "toolDescription": "Usa essa tool para pesquisar sobre informações atualizadas do post na internet",
+          "method": "POST",
+          "url": "https://api.tavily.com/search",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"{{ $json['Conteudo A ser gerado'] }}\",\n  \"auto_parameters\": false,\n  \"topic\": \"general\",\n  \"search_depth\": \"advanced\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 1,\n  \"time_range\": null,\n  \"start_date\": \"2025-02-09\",\n  \"end_date\": \"2025-12-29\",\n  \"include_answer\": true,\n  \"include_raw_content\": true,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_favicon\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": [],\n  \"country\": null\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.2,
+        "position": [
+          544,
+          -64
+        ],
+        "id": "00c5ceaf-7902-413c-be5a-27fdbe7d5eeb",
+        "name": "Consultar",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "OodEu5TX0MIrxL0y",
+            "name": "Header Auth - Tavily"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "folder",
+          "name": "=Produção de Conteúdo dia {{ $now.format('dd-MM-yyyy') }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1aH0L0KvXCSGqvG1sYgu-GJ6WMgP6T0Gv",
+            "mode": "list",
+            "cachedResultName": "Conteúdo - Professores - Hackathon",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1aH0L0KvXCSGqvG1sYgu-GJ6WMgP6T0Gv"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          752,
+          -384
+        ],
+        "id": "9e3d80f1-6ebf-48ca-a002-55efb6c2cbed",
+        "name": "Create folder",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "sHHX5kVb06Sx0WuP",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "Conteúdo em Foto P1",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{$items(\"Create folder\")[0].json[\"id\"]}}\n",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          3216,
+          -704
+        ],
+        "id": "9adc95c7-a253-4039-af99-60c1b0dee604",
+        "name": "Upload file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "sHHX5kVb06Sx0WuP",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Gere um prompt para geração de três imagens com base no texto abaixo\nAs imagens devem ser corelacionadas mas diferentes\nSempre numere os prompts em 1,2 e 3.\nOBS: Gere apenas o texto do prompt e nada mais\n {{ $json.output }}",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          1184,
+          -384
+        ],
+        "id": "ceb90559-08f2-4ed8-80d4-3fe8bd18e7b0",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1184,
+          -208
+        ],
+        "id": "260adc4f-142e-4a2b-8333-ba985efbdc6e",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "jDAayoj1hHwdWdhp",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $workflow.id }}",
+          "contextWindowLength": 1
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          1280,
+          -208
+        ],
+        "id": "c7a7984b-b2a5-41e5-9031-4d8321e454ef",
+        "name": "Simple Memory2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d783df36-4458-465b-b1e9-08e02268c9ec",
+                "name": "P1",
+                "value": "={{ $json.P1 }}",
+                "type": "string"
+              },
+              {
+                "id": "09d8b355-0527-45bb-a1d6-48d22d6c2ffb",
+                "name": "P2",
+                "value": "={{ $json.P2 }}",
+                "type": "string"
+              },
+              {
+                "id": "84bf9c25-d68c-4021-a9b0-014410775472",
+                "name": "P3",
+                "value": "={{ $json.P3 }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2016,
+          -384
+        ],
+        "id": "b2ee0861-38e7-4d8c-8f5b-97dede0c7282",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.openai.com/v1/images/generations",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer $OPENAI_API_KEY"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "model",
+                "value": "gpt-image-1"
+              },
+              {
+                "name": "prompt",
+                "value": "={{ $json.P1 }}"
+              },
+              {
+                "name": "size",
+                "value": "1024x1024"
+              },
+              {
+                "name": "quality",
+                "value": "low"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2736,
+          -704
+        ],
+        "id": "197ba502-0d16-4d29-9be5-8f6ecb440d4b",
+        "name": "HTTP Request1",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "BVNmkERJiNckwLLs",
+            "name": "Header Auth - Open AI"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "data[0].b64_json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          2992,
+          -704
+        ],
+        "id": "48818801-1f49-4413-a076-889074e1816c",
+        "name": "Convert to File1"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.openai.com/v1/images/generations",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer $OPENAI_API_KEY"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "model",
+                "value": "gpt-image-1"
+              },
+              {
+                "name": "prompt",
+                "value": "={{ $json.P2 }}"
+              },
+              {
+                "name": "size",
+                "value": "1024x1024"
+              },
+              {
+                "name": "quality",
+                "value": "low"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2688,
+          -432
+        ],
+        "id": "ffc24884-ec26-4cd3-b6e7-a09c2f7ec036",
+        "name": "HTTP Request2",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "BVNmkERJiNckwLLs",
+            "name": "Header Auth - Open AI"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "data[0].b64_json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          2976,
+          -432
+        ],
+        "id": "1d70ab8d-4aa9-4f66-97c7-b0ba68b64530",
+        "name": "Convert to File2"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.openai.com/v1/images/generations",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer $OPENAI_API_KEY"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "model",
+                "value": "gpt-image-1"
+              },
+              {
+                "name": "prompt",
+                "value": "={{ $json.P3 }}"
+              },
+              {
+                "name": "size",
+                "value": "1024x1024"
+              },
+              {
+                "name": "quality",
+                "value": "low"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2704,
+          -224
+        ],
+        "id": "8b1dcdfe-d3d8-4d3b-9e44-165f03e8f82c",
+        "name": "HTTP Request3",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "BVNmkERJiNckwLLs",
+            "name": "Header Auth - Open AI"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "data[0].b64_json",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          3008,
+          -224
+        ],
+        "id": "de90a8ee-7d18-4149-82dc-40fc682e040f",
+        "name": "Convert to File3"
+      },
+      {
+        "parameters": {
+          "name": "Conteúdo em Foto P2",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{$items(\"Create folder\")[0].json[\"id\"]}}\n",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          3232,
+          -416
+        ],
+        "id": "35990bc8-0c4e-4900-91f5-aa38102b9c47",
+        "name": "Upload file1",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "sHHX5kVb06Sx0WuP",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "Conteúdo em Foto P3",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{$items(\"Create folder\")[0].json[\"id\"]}}\n",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          3232,
+          -224
+        ],
+        "id": "561b4491-31a1-4387-bbf4-f5638ff4cd25",
+        "name": "Upload file2",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "sHHX5kVb06Sx0WuP",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Supondo que o texto venha do campo `output`\nconst texto = $json.output;\n\n// Divide o texto em 3 partes com base em quebras de linha ou numeração\n// (ajuste a lógica se o texto tiver outro padrão)\nconst partes = texto\n  .split(/\\n?\\d+\\.\\s/) // separa por \"1.\", \"2.\", \"3.\" etc\n  .filter(p => p.trim() !== ''); // remove partes vazias\n\n// Retorna um array de 3 elementos (cada um é um item no n8n)\nreturn partes.slice(0, 3).map((parte, i) => ({\n  json: {\n    index: i + 1,\n    conteudo: parte.trim()\n  }\n}));\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1536,
+          -384
+        ],
+        "id": "a29551c3-9693-4abb-9052-46fc0c6a6e87",
+        "name": "Pegar Prompts Imagens"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Junta todos os itens anteriores em um único objeto\nconst itens = $input.all(); // pega todos os itens que chegam\nconst resultado = {};\n\n// Cria chaves P1, P2, P3 com base no index de cada item\nitens.forEach((item, i) => {\n  resultado[`P${i + 1}`] = item.json.conteudo;\n});\n\n// Retorna um único item\nreturn [{ json: resultado }];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1728,
+          -384
+        ],
+        "id": "e3bd0e12-3109-40e4-9bab-e82e06f81d10",
+        "name": "Pegar Prompt Imagens"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Gere Três questões de multipla escolha com itens A, B C e D sobre o tema explicitado abaixo, apenas um dos itens deve estar correto \n\n{{$items(\"Product content - Hackathon\")[0].json[\"output\"]}}\n",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          2704,
+          -1056
+        ],
+        "id": "88367d5e-1457-47cb-b0de-831eb94636b9",
+        "name": "AI Agent2"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          2704,
+          -912
+        ],
+        "id": "7aaac60a-6cfa-4986-bac3-b16870e38f54",
+        "name": "OpenAI Chat Model2",
+        "credentials": {
+          "openAiApi": {
+            "id": "jDAayoj1hHwdWdhp",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $workflow.id }}",
+          "contextWindowLength": 1
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          2800,
+          -896
+        ],
+        "id": "18afa2f7-0d00-4df8-b0ed-5752f9ac15b7",
+        "name": "Simple Memory1"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentURL": "={{$items(\"Create a document\")[0].json[\"id\"]}}\n",
+          "actionsUi": {
+            "actionFields": [
+              {
+                "action": "insert",
+                "text": "=\n{{ $json.output }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.googleDocs",
+        "typeVersion": 2,
+        "position": [
+          3136,
+          -1056
+        ],
+        "id": "f58ac882-c460-4c49-9485-2cfa3187ee86",
+        "name": "Update a document1",
+        "credentials": {
+          "googleDocsOAuth2Api": {
+            "id": "UaiCjj8IpDbFovil",
+            "name": "Google Docs account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "folderId": "={{ $json.id }}",
+          "title": "Documento Texto"
+        },
+        "type": "n8n-nodes-base.googleDocs",
+        "typeVersion": 2,
+        "position": [
+          960,
+          -384
+        ],
+        "id": "57515910-8677-47e2-ab76-078088376f8a",
+        "name": "Create a document",
+        "credentials": {
+          "googleDocsOAuth2Api": {
+            "id": "UaiCjj8IpDbFovil",
+            "name": "Google Docs account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          4000,
+          -624
+        ],
+        "id": "2afabc7c-a6e6-408b-83aa-c173f63e2809",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "list",
+          "owner": {
+            "__rl": true,
+            "value": "https://github.com/Nathanmn2004",
+            "mode": "url"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "https://github.com/Nathanmn2004/n8n-files-hackathon-devsImpacto",
+            "mode": "url"
+          }
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          4224,
+          -624
+        ],
+        "id": "b627ae1d-56cd-4a2a-9ff1-ee9d8e12f40b",
+        "name": "List files",
+        "webhookId": "01440dbc-e19c-4fbd-b236-a692b8220956",
+        "credentials": {
+          "githubApi": {
+            "id": "uIMZpBw61reVK8P9",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "name"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          4416,
+          -624
+        ],
+        "id": "1ecf74db-809a-4996-b9e0-a3c265c9869c",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "workflowId": {
+            "__rl": true,
+            "value": "M5mq4UZZmushXF0p",
+            "mode": "list",
+            "cachedResultName": "Product Content - Classroom hackathon (#M5mq4UZZmushXF0p)"
+          },
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "position": [
+          4624,
+          -624
+        ],
+        "id": "680e409d-ebb1-46ec-8ba5-e57b87776c27",
+        "name": "Get a workflow",
+        "credentials": {
+          "n8nApi": {
+            "id": "11ibJKElOuu6yWes",
+            "name": "n8n account - hackathon"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6be8c21f-272a-45df-995d-2209809c1657",
+                "name": "commitDate",
+                "value": "={{ $now.format('dd-MM-yyyy/H:mm') }}",
+                "type": "string"
+              },
+              {
+                "id": "88409fe1-6244-4cd9-b0de-c2356f3617b8",
+                "name": "fileName",
+                "value": "={{ $('Get a workflow').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          5216,
+          -624
+        ],
+        "id": "d41b84e9-6aea-435e-aab9-a401d4b6e46e",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "3122fa8b-6d11-4c5c-be0c-d58b0a3329c0",
+                "leftValue": "={{ $('Aggregate').item.json.name }}",
+                "rightValue": "={{ $('Get a workflow').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-",
+                "operator": {
+                  "type": "array",
+                  "operation": "contains",
+                  "rightType": "any"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          5424,
+          -624
+        ],
+        "id": "5dcd7792-2a57-46e0-aee9-59366f0ca0b1",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "edit",
+          "owner": {
+            "__rl": true,
+            "value": "https://github.com/Nathanmn2004",
+            "mode": "url"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "https://github.com/Nathanmn2004/n8n-files-hackathon-devsImpacto",
+            "mode": "url"
+          },
+          "filePath": "={{ $('Get a workflow').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}",
+          "fileContent": "={{ $('To base64').item.json.data }}",
+          "commitMessage": "=backup automatico"
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          5632,
+          -720
+        ],
+        "id": "0589d691-a9c5-43c0-98eb-4a3729f9b55e",
+        "name": "Edit a file",
+        "webhookId": "937eac04-7bdb-4cfa-b545-49246c4392c9",
+        "credentials": {
+          "githubApi": {
+            "id": "uIMZpBw61reVK8P9",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "owner": {
+            "__rl": true,
+            "value": "https://github.com/Nathanmn2004",
+            "mode": "url"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "https://github.com/Nathanmn2004/n8n-files-hackathon-devsImpacto",
+            "mode": "url"
+          },
+          "filePath": "={{ $('Get a workflow').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}",
+          "fileContent": "={{ $('To base64').item.json.data }}",
+          "commitMessage": "=backup automatico"
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          5648,
+          -496
+        ],
+        "id": "f4102348-dbff-4bd5-91f9-778edb5befed",
+        "name": "Create a file",
+        "webhookId": "6bd02a2b-3062-46db-9fb3-6bd3e375107a",
+        "credentials": {
+          "githubApi": {
+            "id": "uIMZpBw61reVK8P9",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "binaryToPropery",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          5008,
+          -624
+        ],
+        "id": "9b4c68ef-86b4-4911-a41c-d55020cdea18",
+        "name": "To base64"
+      },
+      {
+        "parameters": {
+          "operation": "toJson",
+          "options": {
+            "format": true
+          }
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          4800,
+          -624
+        ],
+        "id": "3deeead1-0278-412a-aee8-059548b2ad10",
+        "name": "Json file"
+      }
+    ],
+    "connections": {
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Product content - Hackathon",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "Product content - Hackathon",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Product content - Hackathon": {
+        "main": [
+          [
+            {
+              "node": "Create folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Product content - Hackathon",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar": {
+        "ai_tool": [
+          [
+            {
+              "node": "Product content - Hackathon",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create folder": {
+        "main": [
+          [
+            {
+              "node": "Create a document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Pegar Prompts Imagens",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory2": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HTTP Request3",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "AI Agent2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Convert to File1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request2": {
+        "main": [
+          [
+            {
+              "node": "Convert to File2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request3": {
+        "main": [
+          [
+            {
+              "node": "Convert to File3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File1": {
+        "main": [
+          [
+            {
+              "node": "Upload file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File2": {
+        "main": [
+          [
+            {
+              "node": "Upload file1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File3": {
+        "main": [
+          [
+            {
+              "node": "Upload file2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pegar Prompts Imagens": {
+        "main": [
+          [
+            {
+              "node": "Pegar Prompt Imagens",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pegar Prompt Imagens": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent2": {
+        "main": [
+          [
+            {
+              "node": "Update a document1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model2": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent2",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory1": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent2",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a document": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update a document1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file1": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file2": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No Operation, do nothing": {
+        "main": [
+          [
+            {
+              "node": "List files",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "List files": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Get a workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a workflow": {
+        "main": [
+          [
+            {
+              "node": "Json file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Edit a file",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Create a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "To base64": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Json file": {
+        "main": [
+          [
+            {
+              "node": "To base64",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "69d76c99-6972-46ad-a7fe-bfeef716ba5f",
+    "triggerCount": 0,
+    "shared": [
+      {
+        "createdAt": "2025-11-08T23:27:01.532Z",
+        "updatedAt": "2025-11-08T23:27:01.532Z",
+        "role": "workflow:owner",
+        "workflowId": "M5mq4UZZmushXF0p",
+        "projectId": "nRwaCbNaDzluyZZa",
+        "project": {
+          "createdAt": "2025-08-22T16:50:38.409Z",
+          "updatedAt": "2025-08-22T20:53:37.387Z",
+          "id": "nRwaCbNaDzluyZZa",
+          "name": "Nathan Nobrega <nathanmeira10@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "projectRelations": [
+            {
+              "createdAt": "2025-08-22T16:50:38.409Z",
+              "updatedAt": "2025-08-22T16:50:38.409Z",
+              "role": "project:personalOwner",
+              "userId": "8fe316b7-98fd-4d44-a7a1-d217981b8f90",
+              "projectId": "nRwaCbNaDzluyZZa",
+              "user": {
+                "createdAt": "2025-08-22T16:50:37.881Z",
+                "updatedAt": "2025-11-09T11:57:35.925Z",
+                "id": "8fe316b7-98fd-4d44-a7a1-d217981b8f90",
+                "email": "nathanmeira10@gmail.com",
+                "firstName": "Nathan",
+                "lastName": "Nobrega",
+                "personalizationAnswers": {
+                  "version": "v4",
+                  "personalization_survey_submitted_at": "2025-08-22T20:54:03.371Z",
+                  "personalization_survey_n8n_version": "1.106.3",
+                  "companySize": "<20",
+                  "companyType": "systems-integrator",
+                  "role": "business-owner",
+                  "reportedSource": "google"
+                },
+                "settings": {
+                  "userActivated": true,
+                  "easyAIWorkflowOnboarded": true,
+                  "firstSuccessfulWorkflowId": "tHLBzND0TQC3qEmu",
+                  "userActivatedAt": 1757005811359,
+                  "npsSurvey": {
+                    "responded": true,
+                    "lastShownAt": 1758566889231
+                  }
+                },
+                "role": "global:owner",
+                "disabled": false,
+                "mfaEnabled": false,
+                "lastActiveAt": "2025-11-09",
+                "isPending": false
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "tags": []
+  }
+]
